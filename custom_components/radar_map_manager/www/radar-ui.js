@@ -836,7 +836,12 @@ export class RadarUI {
                 if (caps.current_mount !== undefined) {
                     finalChecked = (caps.current_mount === 'ceiling'); 
                 }
-                const entId = `select.${rName.toLowerCase()}_install_mode`;
+                let safeName = rName.toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
+                let entId = `select.${safeName}_install_mode`;
+                if (hass && !hass.states[entId]) {
+                    const found = Object.keys(hass.states).find(k => k.startsWith(`select.${safeName}`) && k.includes('install_mode'));
+                    if (found) entId = found;
+                }
                 if (hass && hass.states[entId]) {
                     finalChecked = (hass.states[entId].state.toLowerCase() === 'ceiling');
                 }
@@ -848,7 +853,12 @@ export class RadarUI {
                 }
         }
         let hVal = getVal('mount_height');
-        const hEntId = `number.${rName.toLowerCase()}_radar_height`;
+        let safeNameH = rName.toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
+        let hEntId = `number.${safeNameH}_radar_height`;
+        if (hass && !hass.states[hEntId]) {
+            const found = Object.keys(hass.states).find(k => k.startsWith(`number.${safeNameH}`) && k.includes('radar_height'));
+            if (found) hEntId = found;
+        }
         if (hass && hass.states[hEntId] && hass.states[hEntId].state !== 'unavailable') {
             hVal = parseFloat(hass.states[hEntId].state) || hVal;
         }

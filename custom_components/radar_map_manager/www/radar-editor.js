@@ -238,7 +238,12 @@ export class RadarEditor {
         if (elH) {
             elH.onchange = (e) => {
                 const val = parseFloat(e.target.value);
-                const hEntId = `number.${state.radar?.toLowerCase()}_radar_height`;
+                let safeName = state.radar?.toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
+                let hEntId = `number.${safeName}_radar_height`;
+                if (state.hass && !state.hass.states[hEntId]) {
+                    const found = Object.keys(state.hass.states).find(k => k.startsWith(`number.${safeName}`) && k.includes('radar_height'));
+                    if (found) hEntId = found;
+                }
                 if (state.hass && state.hass.states[hEntId] && state.hass.states[hEntId].state !== 'unavailable') {
                     state.hass.callService('number', 'set_value', { entity_id: hEntId, value: String(val) });
                 }

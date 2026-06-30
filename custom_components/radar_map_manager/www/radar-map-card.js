@@ -425,8 +425,13 @@ class RadarMapCardNative extends HTMLElement {
                 const newLayout = { ...(r.layout || {}), ...that.state.layoutChanges };
                 if (that.state.layoutChanges.ceiling_mount !== undefined) {
                     const isCeiling = that.state.layoutChanges.ceiling_mount;
-                    const entId = `select.${that.state.radar.toLowerCase()}_install_mode`;
-                    if (that._hass.states[entId]) {
+                    let safeName = that.state.radar.toLowerCase().replace(/ /g, "_").replace(/-/g, "_");
+                    let entId = `select.${safeName}_install_mode`;
+                    if (that._hass && !that._hass.states[entId]) {
+                        const found = Object.keys(that._hass.states).find(k => k.startsWith(`select.${safeName}`) && k.includes('install_mode'));
+                        if (found) entId = found;
+                    }
+                    if (that._hass && that._hass.states[entId]) {
                         that._hass.callService('select', 'select_option', {
                             entity_id: entId,
                             option: isCeiling ? 'Ceiling' : 'Wall'
