@@ -344,6 +344,9 @@ export class RadarEditor {
                     }
                 });
             }
+            if (!isEdit && discovered.length > 0) {
+                defaultName = discovered[0].name;
+            }
             const modalOverlay = document.createElement('div');
             modalOverlay.id = 'rmm-add-modal-overlay';
             modalOverlay.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; display:flex; justify-content:center; align-items:center; font-family:-apple-system, BlinkMacSystemFont, sans-serif;";
@@ -388,6 +391,11 @@ export class RadarEditor {
             const inputPin = modalBox.querySelector('#rmm-input-pin');
             if (!isEdit) {
                 const discBtns = modalBox.querySelectorAll('.btn-discovered');
+                if (discBtns.length > 0) {
+                    discBtns[0].style.background = 'var(--primary-color, #03a9f4)';
+                    discBtns[0].style.color = '#fff';
+                    setTimeout(() => inputPin.focus(), 100); 
+                }
                 discBtns.forEach(btn => {
                     btn.onclick = () => {
                         discBtns.forEach(b => { 
