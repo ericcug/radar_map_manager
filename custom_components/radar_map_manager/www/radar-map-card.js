@@ -86,6 +86,12 @@ class RadarMapCardNative extends HTMLElement {
             this._streamUnsubscribe = null;
         }
     }
+    static getStubConfig() {
+        return { type: "custom:radar-map-card", map_group: "default" };
+    }
+    getCardSize() {
+        return 5;
+    }
     setConfig(config) {
         this.config = config;
         this.state.mapGroup = config.map_group || "default";
