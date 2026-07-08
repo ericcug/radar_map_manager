@@ -134,7 +134,14 @@ class RadarZoneSensor(CoordinatorEntity, BinarySensorEntity):
                 is_triggered = True
                 break
         now = time.time()
-        delay_sec = float(self.config.get('delay', 0))
+        delay_val = self.config.get('delay', 0)
+        if delay_val is None or str(delay_val).lower() in ("none", "unknown", "unavailable", ""):
+            delay_sec = 0.0
+        else:
+            try:
+                delay_sec = float(delay_val)
+            except (ValueError, TypeError):
+                delay_sec = 0.0
         if is_triggered:
             self._last_triggered = now
             should_be_on = True

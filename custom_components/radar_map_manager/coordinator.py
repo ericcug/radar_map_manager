@@ -1,4 +1,5 @@
 import logging
+import traceback
 from homeassistant.helpers.storage import Store
 from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ class RadarCoordinator:
             try:
                 callback()
             except Exception as e:
-                _LOGGER.error(f"RMM: Error in update listener: {e}")
+                _LOGGER.error(f"RMM: Error in update listener: {e}\n{traceback.format_exc()}")
     async def async_load(self):
         try:
             raw_data = await self._store.async_load()

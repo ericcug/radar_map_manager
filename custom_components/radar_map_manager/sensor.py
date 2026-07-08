@@ -6,6 +6,14 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.util import slugify
 from .const import DOMAIN
 _LOGGER = logging.getLogger(__name__)
+def _safe_float(val):
+    """Safely convert a value to float, returning 0.0 for None/invalid values."""
+    if val is None or str(val).lower() in ("none", "unknown", "unavailable", ""):
+        return 0.0
+    try:
+        return float(val)
+    except (ValueError, TypeError):
+        return 0.0
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     if discovery_info is None: return
     if DOMAIN not in hass.data or "coordinator" not in hass.data[DOMAIN]: return
@@ -135,10 +143,10 @@ class RadarZoneCountSensor(CoordinatorEntity, SensorEntity):
             try:
                 p_i = poly[i]
                 p_j = poly[j]
-                xi = float(p_i[0]) if isinstance(p_i, (list, tuple)) else float(p_i.get('x', 0))
-                yi = float(p_i[1]) if isinstance(p_i, (list, tuple)) else float(p_i.get('y', 0))
-                xj = float(p_j[0]) if isinstance(p_j, (list, tuple)) else float(p_j.get('x', 0))
-                yj = float(p_j[1]) if isinstance(p_j, (list, tuple)) else float(p_j.get('y', 0))
+                xi = _safe_float(p_i[0]) if isinstance(p_i, (list, tuple)) else _safe_float(p_i.get('x', 0))
+                yi = _safe_float(p_i[1]) if isinstance(p_i, (list, tuple)) else _safe_float(p_i.get('y', 0))
+                xj = _safe_float(p_j[0]) if isinstance(p_j, (list, tuple)) else _safe_float(p_j.get('x', 0))
+                yj = _safe_float(p_j[1]) if isinstance(p_j, (list, tuple)) else _safe_float(p_j.get('y', 0))
                 intersect = ((yi > y) != (yj > y)) and (x < (xj - xi) * (y - yi) / (yj - yi) + xi)
                 if intersect: inside = not inside
                 j = i
